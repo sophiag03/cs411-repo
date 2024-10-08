@@ -21,6 +21,9 @@ class Habitat:
         #   self.animals = []
         self.animals = animals or []
 
+def get_habitat_details(self) -> dict:
+    pass
+
 def update_habitat_details(self, **kwargs: dict[str: Any]) -> None:
     pass
 
@@ -30,5 +33,3 @@ def assign_animals_to_habitat(self, animals: List[Animal]) -> None:
 def get_animals_in_habitat(self) -> List[Animal]:
     pass
 
-def get_habitat_details(self) -> dict:
-    pass
