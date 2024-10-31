@@ -9,7 +9,7 @@ configure_logger(logger)
 
 def get_random() -> float:
     """
-     Fetches a random float with two decimal places starting from 0 in the catalog from random.org.
+     Fetches a random float with two decimal places in the catalog from random.org.
 
      Returns:
         float: The random number fetched from random.org.
