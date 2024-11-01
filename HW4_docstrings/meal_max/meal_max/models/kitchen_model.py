@@ -22,7 +22,10 @@ class Meal:
 
     def __post_init__(self):
         """
-    Angel
+        Validates the attributes of the meal class
+
+        Raises:
+            ValueError: If the price of the meal is not a positive value or If the difficulty is not properly labeled as low, med or high
         """
         if self.price < 0:
             raise ValueError("Price must be a positive value.")
@@ -32,7 +35,18 @@ class Meal:
 
 def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
     """
-Angel
+    Creates a new meal in the meals table
+
+    Args:
+        meal (str): the meal name
+        cuisine (str): the type of cuisine 
+        price (float): the price of the meal
+        difficulty (str): how difficult it is to make the meal
+    
+    Raises:
+        ValueError: If the price or difficulty are invalid (price is negative or difficulty is not one of the categories)
+        sqlite3.IntegrityError: If a meal with the same name already exists
+        sqlite3.Error: For any other database errors
     """
     if not isinstance(price, (int, float)) or price <= 0:
         raise ValueError(f"Invalid price: {price}. Price must be a positive number.")
@@ -81,7 +95,14 @@ def clear_meals() -> None:
 
 def delete_meal(meal_id: int) -> None:
     """
-   Angel 
+    Soft delete a meal from the table by marking it as deleted
+
+    Args:
+        meal_id (int): The ID of the meal to delete
+
+    Raises:
+        ValueError: If the meal with the given ID is already marked as deleted or does not exist
+        sqlite3.Error: If any database error occurs
     """
     try:
         with get_db_connection() as conn:
@@ -153,7 +174,17 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
 
 def get_meal_by_id(meal_id: int) -> Meal:
     """
-   Angel 
+    Retrieves a song from the catatlg by its meal ID
+
+    Args:
+        meal_id (int): the ID of the meal to retrieve
+
+    Returns: 
+        Meal: The Meal object corresponding to the meal_id
+
+    Raises:
+        ValueError: If the meal is not found or is marked as deleted
+        sqlite3.Error: If any database error occurs
     """
     try:
         with get_db_connection() as conn:
