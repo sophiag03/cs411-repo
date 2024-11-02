@@ -16,11 +16,11 @@ def mock_update_meal_stats(mocker):
 """Fixtures providing sample combatants (meals) for the tests."""
 @pytest.fixture
 def sample_combatant1():
-    return Meal(1, 'Artist 1', 'Song 1', 2022, 'Pop', 180)
+    return Meal(1, 'Artist 1', 'Song 1', 2022, 'Pop', 180) ##
 
 @pytest.fixture
 def sample_combatant2():
-    return Meal(2, 'Artist 2', 'Song 2', 2021, 'Rock', 155)
+    return Meal(2, 'Artist 2', 'Song 2', 2021, 'Rock', 155) ##
 
 @pytest.fixture
 def sample_battle(sample_combatant1, sample_combatant2):
@@ -57,3 +57,5 @@ def test_clear_combatants(battle_model, sample_battle):
     assert len(battle_model.combatants) == 0, "Combatants list should be empty after clearing"
 
 #last 3 functions from battle_model remaining; have to fix up first battle() test
+
+#Sophia do last three
