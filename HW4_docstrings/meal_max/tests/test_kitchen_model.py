@@ -35,7 +35,7 @@ def mock_cursor(mocker):
     def mock_get_db_connection():
         yield mock_conn  # Yield the mocked connection object
 
-    mocker.patch("music_collection.models.song_model.get_db_connection", mock_get_db_connection)
+    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
 
     return mock_cursor  # Return the mock cursor so we can set expectations per test
 
@@ -146,7 +146,7 @@ def test_delete_song(mock_cursor):
     assert actual_select_args == expected_select_args, f"The SELECT query arguments did not match. Expected {expected_select_args}, got {actual_select_args}."
     assert actual_update_args == expected_update_args, f"The UPDATE query arguments did not match. Expected {expected_update_args}, got {actual_update_args}."
 
-def test_delete_song_bad_id(mock_cursor):
+def test_delete_meal_bad_id(mock_cursor):
     """Test error when trying to delete a non-existent meal."""
 
     # Simulate that no meal exists with the given ID
@@ -156,7 +156,7 @@ def test_delete_song_bad_id(mock_cursor):
     with pytest.raises(ValueError, match="Meal with ID 999 not found"):
         delete_meal(999)
 
-def test_delete_song_already_deleted(mock_cursor):
+def test_delete_meal_already_deleted(mock_cursor):
     """Test error when trying to delete a meal that's already marked as deleted."""
 
     # Simulate that the meal exists but is already marked as deleted
@@ -167,11 +167,30 @@ def test_delete_song_already_deleted(mock_cursor):
         delete_meal(999)
 
 
-#Sophia
-#get leaderboard
+""" Sophia
 
-#get meal by id
+get leaderboard (get_all_songs_ordered_by...)
+    incorrect sort argument
 
-#get meal by name
+    make sure returns dictionary
 
-#update meal stats
+get meal by id (get_song_by_id/ bad_id)
+    meal is not found
+    meal is marked as deleted
+    
+    returns correct meal
+
+get meal by name (get_song_by_id/ bad_id)
+    meal does not exist
+    meal has been deleted
+    
+    returns correct meal
+
+update meal stats (update_play_count / deleted_song)
+    meal doesnt exist
+    meal has been deleted
+    desired result invalid
+    
+    has it been updated correctly
+
+"""

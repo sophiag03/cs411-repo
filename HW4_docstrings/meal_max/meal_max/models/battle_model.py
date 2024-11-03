@@ -101,7 +101,7 @@ class BattleModel:
 
         Retrieves the battle_score of the combatant.
 
-        Calculate the battle_score using the price, cuisine, and difficulty.
+        Calculates the battle_score using the price, cuisine, and difficulty.
 
         Arguments:
             combatant (Meal): The specific meal we want the battle_score of
