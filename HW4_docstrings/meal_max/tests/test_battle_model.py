@@ -62,23 +62,39 @@ def test_clear_combatants(battle_model, sample_battle):
 
 #last 3 functions from battle_model remaining; have to fix up first battle() test
 
+def test_get_battle_score(battle_model, sample_combatant1):
+    """Test calculating the battle score"""
+
+    expected_score = 88.93
+    actual_score = battle_model.get_battle_score(sample_combatant1)
+    assert actual_score == pytest.approx(expected_score, 0.01), "Battle Score calculation is incorrect"
 
 
+def test_get_combatants_empty(battle_model):
+    """Test get_combatants with an empty list"""
 
-""" Sophia do last three
+    battle_model.clear_combatants()
+    assert battle_model.get_combatants() == [], "get_combatants should return an empty list initially"
 
-get_battle_score
-    assert correct score calculated
+def test_get_combatants_with_combatants(battle_model, sample_battle):
+    """Test get_combatants with one or more combatants"""
 
-get_combatants (get_all_songs)
-    empty combatants
-    1 combatant
-    2 combatants
-    ?????
+    battle_model.combatants.extend(sample_battle)
+    assert battle_model.get_combatants() == sample_battle, "get_combatants did not return the expected combatants"
 
-prep_combatants
-    list with already 2 combatants
 
-    make sure combatant is added
+def test_prep_combatant_adds_correctly(battle_model, sample_combatant1, sample_combatant2):
+    """Test prep_combatant accurately adds meals"""
+    
+    # adding the first combatant
+    battle_model.prep_combatant(sample_combatant1)
+    assert battle_model.combatants == [sample_combatant1], "First combatant was not added correctly"
 
- """
+    # adding the second combatant
+    battle_model.prep_combatant(sample_combatant2)
+    assert battle_model.combatants == [sample_combatant1, sample_combatant2], "Second combatant was not added correctly"
+    
+    # attempting to add a third combatant; should raise an error
+    with pytest.raises(ValueError, match="Combatant list is full"):
+        new_combatant = Meal(3, 'Burger', 'American', 10.99, 'HIGH')
+        battle_model.prep_combatant(new_combatant)
