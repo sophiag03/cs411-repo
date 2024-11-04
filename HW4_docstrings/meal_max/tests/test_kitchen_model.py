@@ -39,8 +39,7 @@ def mock_cursor(mocker):
 
     return mock_cursor  # Return the mock cursor so we can set expectations per test
 
-#Angel
-#create meal
+
 def test_create_meal(mock_cursor):
     """Test creating a new meal in the meals table."""
     
@@ -97,7 +96,6 @@ def test_create_meal_invalid_difficulty():
         create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.00, difficulty="hard")
 
 
-#clear meal
 def test_clear_meals(mock_cursor, mocker):
     """Test clearing the entire meals table (removes all meals)."""
 
@@ -114,7 +112,7 @@ def test_clear_meals(mock_cursor, mocker):
     # Verify that the correct SQL script was executed
     mock_cursor.executescript.assert_called_once()
 
-#delete meal
+
 def test_delete_song(mock_cursor):
     """Test soft deleting a meal from the meals table by meal ID."""
 
