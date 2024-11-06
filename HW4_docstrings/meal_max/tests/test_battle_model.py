@@ -1,7 +1,7 @@
 import pytest
 
-from meal_max.models.kitchen_model import Meal
-from meal_max.models.battle_model import BattleModel 
+from meal_max.meal_max.models.kitchen_model import Meal
+from meal_max.meal_max.models.battle_model import BattleModel 
 
 @pytest.fixture()
 def battle_model():
@@ -11,7 +11,7 @@ def battle_model():
 @pytest.fixture #not 100% but they did something similar in playlist test
 def mock_update_meal_stats(mocker):
     """Mock the update_meal_stat function for testing purposes."""
-    return mocker.patch("meal_max.models.battle_model.update_meal_stats")
+    return mocker.patch("meal_max.meal_max.models.battle_model.update_meal_stats")
 
 """Fixtures providing sample combatants (meals) for the tests."""
 @pytest.fixture
@@ -27,16 +27,29 @@ def sample_battle(sample_combatant1, sample_combatant2):
     return [sample_combatant1, sample_combatant2]
 
 
-
-
-
-def test_battle(battle_model, sample_battle, mock_update_meal_stats):
+def test_battle(battle_model, sample_battle, mock_update_meal_stats, sample_combatant1, sample_combatant2, mocker):
     """Running a test battle w/ mock function to test the update meal stats function"""
-    battle_model.battle.extend(sample_battle)
+    battle_model.combatants.extend(sample_battle)
 
-    battle_model.battle()
+    # Mock the necessary methods and return values
+    mocker.patch.object(battle_model, 'get_battle_score', side_effect=[75, 50])
+    mock_random = mocker.patch("meal_max.meal_max.models.battle_model.get_random", return_value=0.2)
 
-    #not complete!!
+    winner = battle_model.battle()
+
+    # Assert that "Meal 1" is returned as the winner based on score difference
+    assert winner == "Pizza", f"Expected winner to be 'Pizza', but got {winner}"
+
+    # Assert that only one combatant remains and that it’s the winner
+    assert len(battle_model.combatants) == 1, "Expected only one combatant to remain"
+    assert battle_model.combatants[0] == sample_combatant1, "Expected 'Pizza' to remain as the winner"
+
+    # Assert that update_meal_stats was called correctly
+    mock_update_meal_stats.assert_any_call(sample_combatant1.id, 'win')
+    mock_update_meal_stats.assert_any_call(sample_combatant2.id, 'loss')
+
+    # Assert get_random was called once
+    mock_random.assert_called_once()
     #kinda similar to the test_play_current_song function on the playlist tests
 
 def test_battle_no_combatants(battle_model):
@@ -48,14 +61,14 @@ def test_battle_no_combatants(battle_model):
 
 def test_battle_one_combatant(battle_model, sample_combatant1):
     """Test battle raises error when combatants list has only 1 combatant"""
-    battle_model.battle.extend(sample_combatant1) #not sure about this one
+    battle_model.prep_combatant(sample_combatant1) #not sure about this one
 
     with pytest.raises(ValueError, match="Two combatants must be prepped for a battle."):
         battle_model.battle()
 
 def test_clear_combatants(battle_model, sample_battle):
     """Test clearing the entrire combatants list"""
-    battle_model.battle.extend(sample_battle)
+    battle_model.combatants.extend(sample_battle)
 
     battle_model.clear_combatants()
     assert len(battle_model.combatants) == 0, "Combatants list should be empty after clearing"
