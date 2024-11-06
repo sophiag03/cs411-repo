@@ -35,7 +35,7 @@ def mock_cursor(mocker):
     def mock_get_db_connection():
         yield mock_conn  # Yield the mocked connection object
 
-    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
+    mocker.patch("meal_max.meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
 
     return mock_cursor  # Return the mock cursor so we can set expectations per test
 
@@ -44,7 +44,7 @@ def test_create_meal(mock_cursor):
     """Test creating a new meal in the meals table."""
     
     # Call the function to create a new meal
-    create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.00, difficulty='MED')
+    create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.01, difficulty='MED')
 
     expected_query = normalize_whitespace("""
         INSERT INTO meals (meal, cuisine, price, difficulty)
@@ -60,7 +60,7 @@ def test_create_meal(mock_cursor):
     actual_arguments = mock_cursor.execute.call_args[0][1]
 
     # Assert that the SQL query was executed with the correct arguments
-    expected_arguments = ("Meal Name", "Cuisine Type", 12.00, 'MED')
+    expected_arguments = ("Meal Name", "Cuisine Type", 12.01, 'MED')
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 def test_create_duplicate_meal(mock_cursor):
@@ -70,30 +70,30 @@ def test_create_duplicate_meal(mock_cursor):
     mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: meals.meal")
 
     # Expect the function to raise a ValueError with a specific message when handling the IntegrityError
-    with pytest.raises(ValueError, match="Meal with name '{meal}' already exists"):
-        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.00, difficulty='MED')
+    with pytest.raises(ValueError, match="Meal with name 'Meal Name' already exists"):
+        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.01, difficulty='MED')
 
 def test_create_meal_invalid_price():
     """Test error when trying to create a meal with an invalid price (e.g., negative price or non-Integer/non-Float)"""
 
     # Attempt to create a meal with a negative price
-    with pytest.raises(ValueError, match="Invalid price: {price}. Price must be a positive number."):
-        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=-12.00, difficulty='MED')
+    with pytest.raises(ValueError, match="Invalid price: -12.01. Price must be a positive number."):
+        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=-12.01, difficulty='MED')
 
     # Attempt to create a meal with a non-integer/non-float price
-    with pytest.raises(ValueError, match="Invalid price: {price}. Price must be a positive number."):
+    with pytest.raises(ValueError, match="Invalid price: invalid. Price must be a positive number."):
         create_meal(meal="Meal Name", cuisine="Cuisine Type", price="invalid", difficulty='MED')
 
 def test_create_meal_invalid_difficulty():
     """Test error when trying to create a meal with an invalid difficulty (e.g., not in ['LOW', 'MED', 'HIGH'])."""
 
     #Attempt to create a meal with a non-string difficulty
-    with pytest.raises(ValueError, match="Invalid difficulty level: {difficulty}. Must be 'LOW', 'MED', or 'HIGH'."):
-        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.00, difficulty=10)
+    with pytest.raises(ValueError, match="Invalid difficulty level: 10. Must be 'LOW', 'MED', or 'HIGH'."):
+        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.01, difficulty=10)
 
     #Attempt to create a meal with a difficulty not in ['LOW', 'MED', 'HIGH']
-    with pytest.raises(ValueError, match="Invalid difficulty level: {difficulty}. Must be 'LOW', 'MED', or 'HIGH'."):
-        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.00, difficulty="hard")
+    with pytest.raises(ValueError, match="Invalid difficulty level: hard. Must be 'LOW', 'MED', or 'HIGH'."):
+        create_meal(meal="Meal Name", cuisine="Cuisine Type", price=12.01, difficulty="hard")
 
 
 def test_clear_meals(mock_cursor, mocker):
