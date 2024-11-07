@@ -46,6 +46,9 @@ check_db() {
   fi
 }
 
+
+
+
 clear_catalog() {
   echo "Clearing the meals..."
   curl -s -X DELETE "$BASE_URL/clear-meals" | grep -q '"status": "success"'
@@ -129,6 +132,20 @@ get_meal_by_name(){
 #prep-combatants
 
 #leaderboard
+leaderboard(){
+  echo "Getting all meals sorted by sort_by..."
+  response=$(curl -s -X GET "$BASE_URL/leaderboard")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Leaderboard retrieved successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Leaderboard JSON:"
+      echo "$response" | jq .
+    fi
+  else 
+    echo "Failed to get leaderboard."
+    exit 1
+  fi
+}
 
 
 
