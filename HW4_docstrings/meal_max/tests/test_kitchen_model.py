@@ -165,13 +165,6 @@ def test_delete_meal_already_deleted(mock_cursor):
         delete_meal(999)
 
 
-"""
-get leaderboard (get_all_songs_ordered_by...)
-    incorrect sort argument
-
-    make sure returns dictionary
-"""
-
 def test_get_leaderboard_sort_by_wins(mock_cursor):
     """Test the leaderboard for sorting by wins."""
     mock_cursor.fetchall.return_value = [
@@ -180,8 +173,7 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
     ]
 
     actual_leaderboard = get_leaderboard(sort_by="wins")
-
-    assert actual_leaderboard == [
+    expected_leaderboard = [
         {
             'id': 1,
             'meal': 'Pizza',
@@ -202,16 +194,25 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
             'wins': 4,
             'win_pct': 80.0
         }
-    ]
+        ]
+    assert actual_leaderboard == expected_leaderboard, f"Expected {expected_leaderboard}, got {actual_leaderboard}"
+
+    expected_query = normalize_whitespace("""SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct 
+    FROM meals WHERE deleted = false AND battles > 0
+    ORDER BY wins DESC
+    """)
+
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+    assert expected_query == actual_query, f"The query did not match the expected structure."
+
 
 def test_get_leaderboard_sort_by_win_pct(mock_cursor):
+    """Test the leaderboard for sorting by win_pct."""
     mock_cursor.fetchall.return_value = [  
         (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8),
         (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6)
     ]
-    actual_leaderboard = get_leaderboard(sort_by="win_pct")
-
-    assert actual_leaderboard == [
+    expected_leaderboard = [
         {
             'id': 2,
             'meal': 'Sushi',
@@ -233,11 +234,20 @@ def test_get_leaderboard_sort_by_win_pct(mock_cursor):
             'win_pct': 60.0
         }
     ]
+    actual_leaderboard = get_leaderboard(sort_by="win_pct")
+    assert actual_leaderboard == expected_leaderboard, f"Expected {expected_leaderboard}, got {actual_leaderboard}"
     
+    expected_query = normalize_whitespace("""SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct 
+    FROM meals WHERE deleted = false AND battles > 0
+    ORDER BY win_pct DESC
+    """)
+
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+    assert expected_query == actual_query, f"The query did not match the expected structure."
 
 def test_get_leaderboard_invalid_sort_by():
     """Test error raising for an invalid sort paramenter."""
-    with pytest.raises (ValueError, match = "Invalid sort_by parameter"):
+    with pytest.raises (ValueError, match = "Invalid sort_by parameter: invalid_sort"):
         get_leaderboard(sort_by = "invalid_sort")
 
 
@@ -250,13 +260,13 @@ get meal by id (get_song_by_id/ bad_id)
 """
 
 def test_get_meal_by_id_found(mock_cursor):
-    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
+    """Test to retrieve a meal by an ID where ID exists."""
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED')
     
+    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
     meal = get_meal_by_id(1)
     
-    assert isinstance(meal, Meal)
-    assert meal.id == 1
-    assert meal.meal == 'Pizza'
+    assert meal == expected_meal, f"Expected {expected_meal}, got {meal}"
 
 
 """
