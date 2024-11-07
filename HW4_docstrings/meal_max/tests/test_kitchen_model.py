@@ -165,30 +165,115 @@ def test_delete_meal_already_deleted(mock_cursor):
         delete_meal(999)
 
 
-""" Sophia
-
+"""
 get leaderboard (get_all_songs_ordered_by...)
     incorrect sort argument
 
     make sure returns dictionary
+"""
 
+def test_get_leaderboard_sort_by_wins(mock_cursor):
+    mock_cursor.fetchall.return_value = [
+        (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6),
+        (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8)
+    ]
+
+    actual_leaderboard = get_leaderboard(sort_by="wins")
+
+    assert actual_leaderboard == [
+
+        {
+            'id': 1,
+            'meal': 'Pizza',
+            'cuisine': 'Italian',
+            'price': 10.0,
+            'difficulty': 'Medium',
+            'battles': 10,
+            'wins': 6,
+            'win_pct': 60.0
+        },
+        {
+            'id': 2,
+            'meal': 'Sushi',
+            'cuisine': 'Japanese',
+            'price': 12.0,
+            'difficulty': 'Hard',
+            'battles': 5,
+            'wins': 4,
+            'win_pct': 80.0
+        }
+    ]
+
+def test_get_leaderboard_sort_by_wins_pct(mock_cursor):
+    mock_cursor.fetchall.return_value = [
+        (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6),
+        (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8)
+    ]
+
+    actual_leaderboard = get_leaderboard(sort_by="wins_pct")
+
+    assert actual_leaderboard == [
+
+        {
+            'id': 2,
+            'meal': 'Sushi',
+            'cuisine': 'Japanese',
+            'price': 12.0,
+            'difficulty': 'Hard',
+            'battles': 5,
+            'wins': 4,
+            'win_pct': 80.0
+        },
+        {
+            'id': 1,
+            'meal': 'Pizza',
+            'cuisine': 'Italian',
+            'price': 10.0,
+            'difficulty': 'Medium',
+            'battles': 10,
+            'wins': 6,
+            'win_pct': 60.0
+        }
+    ]
+
+def test_get_leaderboard_invalid_sort_by():
+    with pytest.raises (ValueError, match = "Invalid sort_by parameter"):
+        get_leaderboard(sort_by = "invalid_sort")
+
+
+"""
 get meal by id (get_song_by_id/ bad_id)
     meal is not found
     meal is marked as deleted
     
     returns correct meal
+"""
 
+def test_get_meal_by_id_found(mock_cursor):
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'Medium', False)
+    
+    meal = get_meal_by_id(1)
+    
+    assert isinstance(meal, Meal)
+    assert meal.id == 1
+    assert meal.meal == 'Pizza'
+
+
+"""
 get meal by name (get_song_by_id/ bad_id)
     meal does not exist
     meal has been deleted
     
     returns correct meal
+"""
 
+
+
+"""
 update meal stats (update_play_count / deleted_song)
     meal doesnt exist
     meal has been deleted
     desired result invalid
     
     has it been updated correctly
-
 """
