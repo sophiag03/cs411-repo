@@ -165,6 +165,8 @@ def test_delete_meal_already_deleted(mock_cursor):
         delete_meal(999)
 
 
+
+
 def test_get_leaderboard_sort_by_wins(mock_cursor):
     """Test the leaderboard for sorting by wins."""
     mock_cursor.fetchall.return_value = [
@@ -204,7 +206,6 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
 
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
     assert expected_query == actual_query, f"The query did not match the expected structure."
-
 
 def test_get_leaderboard_sort_by_win_pct(mock_cursor):
     """Test the leaderboard for sorting by win_pct."""
@@ -251,34 +252,73 @@ def test_get_leaderboard_invalid_sort_by():
         get_leaderboard(sort_by = "invalid_sort")
 
 
-"""
-get meal by id (get_song_by_id/ bad_id)
-    meal is not found
-    meal is marked as deleted
-    
-    returns correct meal
-"""
 
 def test_get_meal_by_id_found(mock_cursor):
     """Test to retrieve a meal by an ID where ID exists."""
     mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
     meal = get_meal_by_id(1)
-    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
+    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
     
     assert meal == expected_meal, f"Expected {expected_meal}, got {meal}"
 
+    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty, deleted FROM meals WHERE id = ?")
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+
+    assert actual_query == expected_query, f"The query did not match the expected structure."
 
 
-"""
-get meal by name (get_song_by_id/ bad_id)
-    meal does not exist
-    meal has been deleted
+    expected_arguments = (1,)
+    actual_arguments = mock_cursor.execute.call_args[0][1]
+
+    assert actual_arguments == expected_arguments, f"The query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
+
+def test_get_meal_by_bad_id(mock_cursor):
+    mock_cursor.fetchone.return_value = None
+
+    # Expect a ValueError when the meal is not found
+    with pytest.raises(ValueError, match="Meal with ID 999 not found"):
+        get_meal_by_id(999)
+
+def test_get_meal_by_id_deleted_meal(mock_cursor):
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', True)
+
+    with pytest.raises(ValueError, match = "Meal with ID 1 has been deleted"):
+        get_meal_by_id(1)
+
+
+
+def test_get_meal_by_name_found(mock_cursor):
+    """Test to retrieve a meal by a name where the meal exists."""
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
-    returns correct meal
-"""
+    actual_meal = get_meal_by_name('Pizza')
+    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
+    
+    assert actual_meal == expected_meal, f"Expected {expected_meal}, got {actual_meal}"
+
+    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty, deleted FROM meals WHERE meal = ?")
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+
+    assert actual_query == expected_query, f"The query did not match the expected structure."
 
 
+    expected_arguments = ('Pizza',)
+    actual_arguments = mock_cursor.execute.call_args[0][1]
+
+    assert actual_arguments == expected_arguments, f"The query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
+
+def test_get_meal_by_no_name(mock_cursor):
+    mock_cursor.fetchone.return_value = None
+
+    with pytest.raises(ValueError, match = "Meal with name Sushi not found"):
+        get_meal_by_name('Sushi')
+
+def test_get_meal_by_name_deleted_meal(mock_cursor):
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', True)
+
+    with pytest.raises(ValueError, match = "Meal with name Pizza has been deleted"):
+        get_meal_by_name('Pizza')
 
 """
 update meal stats (update_play_count / deleted_song)
@@ -288,3 +328,25 @@ update meal stats (update_play_count / deleted_song)
     
     has it been updated correctly
 """
+
+def test_update_meal_stats_valid (mock_cursor):
+    mock_cursor.fetchone.return_value = [False]
+
+    update_meal_stats (meal_id = 1, results = "win")
+
+    expected_query = normalize_whitespace("UPDATE meals SET battles = battles + 1, wins = wins + 1 WHERE id = ?")
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args_list[1][0][0])
+
+    assert actual_query == expected_query, f"The SQL query did not match the expected structure."
+
+    actual_arguments = 
+
+
+def test_update_meal_stats_not_found (mock_cursor):
+    mock_cursor.fetchone.return_value = 
+
+def test_update_meal_stats_deleted_meal (mock_cursor):
+    mock_cursor.fetchone.return_value = 
+
+def test_update_meal_stats_invalid_result (mock_cursor):
+    mock_cursor.fetchone.return_value = 
