@@ -261,12 +261,13 @@ get meal by id (get_song_by_id/ bad_id)
 
 def test_get_meal_by_id_found(mock_cursor):
     """Test to retrieve a meal by an ID where ID exists."""
-    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED')
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
-    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
     meal = get_meal_by_id(1)
+    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
     assert meal == expected_meal, f"Expected {expected_meal}, got {meal}"
+
 
 
 """
