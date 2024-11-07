@@ -197,15 +197,20 @@ leaderboard(){
 
 #call smoketests
 
+check_health
+check_db
 
+clear_catalog
 
+create_meal "Pizza" "Italian" 10.99 "MED"
+create_meal "Sushi" "Japanese" 12.00 "HIGH"
 
+get_meal_by_id 2
+get_meal_by_name "Pizza"
 
+delete_meal_by_id 1
 
-
-
-
-
-
-
-# sending curl to app.py... name in app corresponds to BASE
+clear_combatants
+prep_combatant "Pizza"
+get_combatants
+leaderboard
