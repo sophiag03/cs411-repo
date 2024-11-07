@@ -126,10 +126,55 @@ get_meal_by_name(){
 
 
 #clear-combatants
+clear_combatants() {
+  echo "Clearing all combatants from battle..."
+  response=$(curl -s -X POST "$BASE_URL/api/clear-combatants" -H "Content-Type: application/json")
+  
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Combatants cleared successfully."
+  else
+    echo "Failed to clear combatants."
+    exit 1
+  fi
+}
+
 
 #get-combatants
+get_combatants() {
+  echo "Retrieving all combatants from battle..."
+  response=$(curl -s -X GET "$BASE_URL/get-combatants")
 
-#prep-combatants
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "All combatants retrieved successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Combatants JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to retrieve all combatants from battle."
+    exit 1
+  fi
+}
+
+#prep-combatant
+prep_combatant(){
+  meal=$1
+
+  echo "Preparing a combatant..."
+  response=$(curl -s -X POST "$BASE_URL/prep-combatant"-H "Content-Type: application/json" \
+    -d "{\"meal\":\"$meal\"}")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Prepared combatant successfully."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Combatants JSON:"
+      echo "$response" | jq .
+    fi
+  else 
+    echo "Failed to prepare combatant."
+    exit 1
+  fi
+}
 
 #leaderboard
 leaderboard(){
