@@ -336,11 +336,9 @@ def test_get_meal_by_name_deleted_meal(mock_cursor):
         get_meal_by_name('Pizza')
 
 
-
-def test_update_meal_stats_successful_update(mock_cursor):
-    """Test updating meal stats for a win or loss."""
-
-    ##updating for a win
+def test_update_meal_stats_win(mock_cursor):
+    """Test updating meal stats for a win."""
+    
     mock_cursor.fetchone.return_value = (False,)
 
     update_meal_stats(meal_id=1, result="win")
@@ -349,13 +347,17 @@ def test_update_meal_stats_successful_update(mock_cursor):
 
     select_query, select_args = all_calls[0][0]
     assert select_query == "SELECT deleted FROM meals WHERE id = ?"
-    assert select_args == (1,)  
+    assert select_args == (1,)
 
     win_query, win_args = all_calls[1][0]
     assert win_query == "UPDATE meals SET battles = battles + 1, wins = wins + 1 WHERE id = ?"
-    assert win_args == (1,)  
+    assert win_args == (1,)
 
-    ##updating for a loss
+def test_update_meal_stats_loss(mock_cursor):
+    """Test updating meal stats for a loss."""
+
+    mock_cursor.fetchone.return_value = (False,)
+
     update_meal_stats(meal_id=1, result="loss")
 
     all_calls = mock_cursor.execute.call_args_list
@@ -367,6 +369,7 @@ def test_update_meal_stats_successful_update(mock_cursor):
     loss_query, loss_args = all_calls[1][0]
     assert loss_query == "UPDATE meals SET battles = battles + 1 WHERE id = ?"
     assert loss_args == (1,)
+
 
 def test_update_meal_stats_deleted (mock_cursor):
     """Test updating a meal that has been deleted."""
