@@ -273,7 +273,7 @@ def test_get_meal_by_id_found(mock_cursor):
     mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
     meal = get_meal_by_id(1)
-    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
+    expected_meal = Meal(id=1, meal='Pizza', cuisine='Italian', price=10.0, difficulty='MED')
     
     assert meal == expected_meal, f"Expected {expected_meal}, got {meal}"
 
@@ -308,7 +308,7 @@ def test_get_meal_by_name_found(mock_cursor):
     mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False)
     
     actual_meal = get_meal_by_name('Pizza')
-    expected_meal = (1, 'Pizza', 'Italian', 10.0, 'MED')
+    expected_meal = Meal(id=1, meal='Pizza', cuisine='Italian', price=10.0, difficulty='MED')
     
     assert actual_meal == expected_meal, f"Expected {expected_meal}, got {actual_meal}"
 
@@ -340,25 +340,31 @@ def test_get_meal_by_name_deleted_meal(mock_cursor):
 def test_update_meal_stats_successful_update(mock_cursor):
     """Test updating meal stats for a win or loss."""
 
-    # Mock existence check (meal is not deleted)
+    ##updating for a win
     mock_cursor.fetchone.return_value = (False,)
 
-    # Update stats for a win
     update_meal_stats(meal_id=1, result="win")
-    
-    # Update stats for a loss
+
+    all_calls = mock_cursor.execute.call_args_list
+
+    select_query, select_args = all_calls[0][0]
+    assert select_query == "SELECT deleted FROM meals WHERE id = ?"
+    assert select_args == (1,)  
+
+    win_query, win_args = all_calls[1][0]
+    assert win_query == "UPDATE meals SET battles = battles + 1, wins = wins + 1 WHERE id = ?"
+    assert win_args == (1,)  
+
+    ##updating for a loss
     update_meal_stats(meal_id=1, result="loss")
 
     all_calls = mock_cursor.execute.call_args_list
 
-    win_query, win_args = all_calls[0][0]
+    select_query, select_args = all_calls[0][0]
+    assert select_query == "SELECT deleted FROM meals WHERE id = ?"
+    assert select_args == (1,)
+
     loss_query, loss_args = all_calls[1][0]
-
-    # Assertions for the win update
-    assert win_query == "UPDATE meals SET battles = battles + 1, wins = wins + 1 WHERE id = ?"
-    assert win_args == (1,)
-
-    # Assertions for the loss update
     assert loss_query == "UPDATE meals SET battles = battles + 1 WHERE id = ?"
     assert loss_args == (1,)
 
