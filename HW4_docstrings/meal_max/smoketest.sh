@@ -46,3 +46,54 @@ check_db() {
   fi
 }
 
+clear_catalog() {
+  echo "Clearing the meals..."
+  curl -s -X DELETE "$BASE_URL/clear-meals" | grep -q '"status": "success"'
+}
+
+delete_song_by_id() {
+  meal_id=$1
+
+  echo "Deleting meal by ID:($meal_id)..."
+  response=$(curl -s -X DELETE "$BASE_URL/delete-meal/$meal_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal deleted successfully by ID ($meal_id)."
+  else
+    echo "Failed to delete meal by ID ($meal_id)."
+    exit 1
+  fi
+}
+
+#create-meal
+
+#get-meal-by-id
+
+#get-meal-by-name
+
+#battle
+
+#clear-combatants
+
+#get-combatants
+
+#prep-combatants
+
+#leaderboard
+
+
+
+
+#call smoketests
+
+
+
+
+
+
+
+
+
+
+
+
+# sending curl to app.py... name in app corresponds to BASE
