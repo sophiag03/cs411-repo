@@ -51,7 +51,7 @@ clear_catalog() {
   curl -s -X DELETE "$BASE_URL/clear-meals" | grep -q '"status": "success"'
 }
 
-delete_song_by_id() {
+delete_meal_by_id() {
   meal_id=$1
 
   echo "Deleting meal by ID:($meal_id)..."
@@ -65,12 +65,62 @@ delete_song_by_id() {
 }
 
 #create-meal
+create_meal(){
+  meal=$1
+  cuisine=$2
+  price=$3
+  difficulty=$4
+
+  echo "Adding meal ($meal - $cuisine, $price, $difficulty) to the meals..."
+  curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty}" | grep -q '"status": "success"'
+
+  if [ $? -eq 0 ]; then
+    echo "Song added successfully."
+  else
+    echo "Failed to add song."
+    exit 1
+  fi
+}
 
 #get-meal-by-id
+get_meal_by_id(){
+  meal_id=$1
+
+  echo "Retrieving meal by ID ($meal_id)..."
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-id/$meal_id")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by ID ($meal_id)."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (ID $meal_id):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get meal by ID ($meal_id)."
+    exit 1
+  fi
+}
 
 #get-meal-by-name
+get_meal_by_name(){
+  meal_name=$1
+
+  echo "Getting meal by meal name (Meal name: '$meal_name')..."
+  response=$(curl -s -X GET "$BASE_URL/get-meal-by-name/$meal_name")
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Meal retrieved successfully by meal name."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Meal JSON (by meal name):"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Failed to get meal by meal name."
+    exit 1
+  fi
+}
 
 #battle
+
 
 #clear-combatants
 
