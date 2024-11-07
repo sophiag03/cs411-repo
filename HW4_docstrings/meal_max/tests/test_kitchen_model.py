@@ -187,7 +187,7 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
             'meal': 'Pizza',
             'cuisine': 'Italian',
             'price': 10.0,
-            'difficulty': 'Medium',
+            'difficulty': 'MED', #changed 'Medium' to 'MED'
             'battles': 10,
             'wins': 6,
             'win_pct': 60.0
@@ -197,20 +197,24 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
             'meal': 'Sushi',
             'cuisine': 'Japanese',
             'price': 12.0,
-            'difficulty': 'Hard',
+            'difficulty': 'HIGH', #chnaged 'Hard' to 'HIGH'
             'battles': 5,
             'wins': 4,
             'win_pct': 80.0
         }
     ]
 
-def test_get_leaderboard_sort_by_wins_pct(mock_cursor):
-    mock_cursor.fetchall.return_value = [
-        (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6),
-        (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8)
+def test_get_leaderboard_sort_by_win_pct(mock_cursor):
+    # mock_cursor.fetchall.return_value = [
+    #     (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6),
+    #     (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8)
+    # ]
+    mock_cursor.fetchall.return_value = [  
+        (2, 'Sushi', 'Japanese', 12.00, 'HIGH', 5, 4, 0.8),
+        (1, 'Pizza', 'Italian', 10.00, 'MED', 10, 6, 0.6)
     ]
-
-    actual_leaderboard = get_leaderboard(sort_by="wins_pct")
+    #had to do this cause the mock_cursor is basically the return statement so you're checking if that assert is equal to the mock_cursor
+    actual_leaderboard = get_leaderboard(sort_by="win_pct")  #changed 'wins_pct' to 'win_pct'
 
     assert actual_leaderboard == [
 
@@ -219,7 +223,7 @@ def test_get_leaderboard_sort_by_wins_pct(mock_cursor):
             'meal': 'Sushi',
             'cuisine': 'Japanese',
             'price': 12.0,
-            'difficulty': 'Hard',
+            'difficulty': 'HIGH', #changed 'Hard' to 'HIGH'
             'battles': 5,
             'wins': 4,
             'win_pct': 80.0
@@ -229,12 +233,13 @@ def test_get_leaderboard_sort_by_wins_pct(mock_cursor):
             'meal': 'Pizza',
             'cuisine': 'Italian',
             'price': 10.0,
-            'difficulty': 'Medium',
+            'difficulty': 'MED', #changed 'Medium' to 'MED'
             'battles': 10,
             'wins': 6,
             'win_pct': 60.0
         }
     ]
+    
 
 def test_get_leaderboard_invalid_sort_by():
     with pytest.raises (ValueError, match = "Invalid sort_by parameter"):
@@ -250,7 +255,7 @@ get meal by id (get_song_by_id/ bad_id)
 """
 
 def test_get_meal_by_id_found(mock_cursor):
-    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'Medium', False)
+    mock_cursor.fetchone.return_value = (1, 'Pizza', 'Italian', 10.0, 'MED', False) #I changed 'Medium' to 'MED' cause it was causing an error
     
     meal = get_meal_by_id(1)
     
