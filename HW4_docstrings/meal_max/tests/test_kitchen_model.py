@@ -165,7 +165,22 @@ def test_delete_meal_already_deleted(mock_cursor):
         delete_meal(999)
 
 
+def test_get_leaderboard_empty(mock_cursor):
+    """Test getting a leaderboard with no meals."""
+    mock_cursor.fetchall.return_value = []
 
+    actual_leaderboard = get_leaderboard(sort_by="wins")
+    expected_leaderboard = []
+
+    assert actual_leaderboard == expected_leaderboard, f"Expected an empty leaderboard but got {actual_leaderboard}"
+
+    expected_query = normalize_whitespace("""SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct 
+        FROM meals WHERE deleted = false AND battles > 0
+        ORDER BY wins DESC
+    """)
+    actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
+
+    assert actual_query == expected_query, f"The query didn't match the expected structure."
 
 def test_get_leaderboard_sort_by_wins(mock_cursor):
     """Test the leaderboard for sorting by wins."""
@@ -200,8 +215,8 @@ def test_get_leaderboard_sort_by_wins(mock_cursor):
     assert actual_leaderboard == expected_leaderboard, f"Expected {expected_leaderboard}, got {actual_leaderboard}"
 
     expected_query = normalize_whitespace("""SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct 
-    FROM meals WHERE deleted = false AND battles > 0
-    ORDER BY wins DESC
+        FROM meals WHERE deleted = false AND battles > 0
+        ORDER BY wins DESC
     """)
 
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
@@ -239,8 +254,8 @@ def test_get_leaderboard_sort_by_win_pct(mock_cursor):
     assert actual_leaderboard == expected_leaderboard, f"Expected {expected_leaderboard}, got {actual_leaderboard}"
     
     expected_query = normalize_whitespace("""SELECT id, meal, cuisine, price, difficulty, battles, wins, (wins * 1.0 / battles) AS win_pct 
-    FROM meals WHERE deleted = false AND battles > 0
-    ORDER BY win_pct DESC
+        FROM meals WHERE deleted = false AND battles > 0
+        ORDER BY win_pct DESC
     """)
 
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
