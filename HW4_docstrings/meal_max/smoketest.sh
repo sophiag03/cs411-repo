@@ -74,14 +74,14 @@ create_meal(){
   price=$3
   difficulty=$4
 
-  echo "Adding meal ($meal - $cuisine, $price, $difficulty) to the meals..."
+  echo "Adding meal ($meal, $cuisine, $price, $difficulty) to the meals..."
   curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
-    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty}" | grep -q '"status": "success"'
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}" | grep -q '"status": "success"'
 
   if [ $? -eq 0 ]; then
     echo "Song added successfully."
   else
-    echo "Failed to add song."
+    echo "Failed to add meal."
     exit 1
   fi
 }
