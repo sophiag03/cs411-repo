@@ -14,7 +14,7 @@ COPY .env /app/.env
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install SQLite3
-RUN apt-get update && apt-get install -y sqlite3 curl
+RUN apt-get update && apt-get install -y sqlite3 curl jq
 
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
