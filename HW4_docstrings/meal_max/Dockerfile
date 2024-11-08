@@ -24,8 +24,11 @@ RUN chmod +x /app/sql/create_db.sh
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
-# Make port 5000 available to the world outside this container
+# Make port 5003 available to the world outside this container
 EXPOSE 5003
+
+#to get it to run 
+ENV PYTHONPATH=/app/meal_max/meal_max:$PYTHONPATH
 
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
