@@ -128,7 +128,7 @@ get_meal_by_name(){
 #clear-combatants
 clear_combatants() {
   echo "Clearing all combatants from battle..."
-  response=$(curl -s -X POST "$BASE_URL/api/clear-combatants" -H "Content-Type: application/json")
+  response=$(curl -s -X POST "$BASE_URL/clear-combatants") #fixed this to get this test to pass
   
   if echo "$response" | grep -q '"status": "success"'; then
     echo "Combatants cleared successfully."
@@ -157,24 +157,57 @@ get_combatants() {
 }
 
 #prep-combatant
+# prep_combatant(){
+#   meal=$1
+#   cuisine=$2
+#   price=$3
+#   difficulty=$4
+
+#   echo "Preparing a combatant: ($meal, $cuisine, $price, $difficulty)..."
+#   response=$(curl -s -X POST "$BASE_URL/prep-combatant" \
+#     -H "Content-Type: application/json" \
+#     -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":"$difficulty"}")
+
+# # response=$(curl -s -X POST "$BASE_URL/prep-combatant" -H "Content-Type: application/json" \
+# #     -d "{\"Meal\":\"$Meal\"}")
+
+#   if echo "$response" | grep -q '"status": "success"'; then
+#     echo "Prepared combatant successfully."
+#     if [ "$ECHO_JSON" = true ]; then
+#       echo "Combatants JSON:"
+#       echo "$response" | jq .
+#     fi
+#   else 
+#     echo "Failed to prepare combatant."
+#     exit 1
+#   fi
+# }
+
 prep_combatant(){
   meal=$1
+  cuisine=$2
+  price=$3
+  difficulty=$4
 
-  echo "Preparing a combatant..."
-  response=$(curl -s -X POST "$BASE_URL/prep-combatant" -H "Content-Type: application/json" \
-    -d "{\"meal\":\"$meal\"}")
+  echo "Preparing a combatant: ($meal, $cuisine, $price, $difficulty)..."
+  response=$(curl -s -X POST "$BASE_URL/prep-combatant" \
+    -H "Content-Type: application/json" \
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}")
 
   if echo "$response" | grep -q '"status": "success"'; then
-    echo "Prepared combatant successfully."
+    echo "Prepared combatant successfully: Pizza"
     if [ "$ECHO_JSON" = true ]; then
       echo "Combatants JSON:"
       echo "$response" | jq .
     fi
   else 
-    echo "Failed to prepare combatant."
+    echo "Failed to prepare combatant. Response was:"
+    echo "$response"
     exit 1
   fi
 }
+
+
 
 #leaderboard
 leaderboard(){
@@ -211,6 +244,6 @@ get_meal_by_name "Pizza"
 delete_meal_by_id 1
 
 clear_combatants
-prep_combatant "Pizza"
+prep_combatant "Pizza" "Italian" 10.99 "MED"
 get_combatants
 leaderboard
