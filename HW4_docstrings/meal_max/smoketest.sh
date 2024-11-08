@@ -157,32 +157,6 @@ get_combatants() {
 }
 
 #prep-combatant
-# prep_combatant(){
-#   meal=$1
-#   cuisine=$2
-#   price=$3
-#   difficulty=$4
-
-#   echo "Preparing a combatant: ($meal, $cuisine, $price, $difficulty)..."
-#   response=$(curl -s -X POST "$BASE_URL/prep-combatant" \
-#     -H "Content-Type: application/json" \
-#     -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":"$difficulty"}")
-
-# # response=$(curl -s -X POST "$BASE_URL/prep-combatant" -H "Content-Type: application/json" \
-# #     -d "{\"Meal\":\"$Meal\"}")
-
-#   if echo "$response" | grep -q '"status": "success"'; then
-#     echo "Prepared combatant successfully."
-#     if [ "$ECHO_JSON" = true ]; then
-#       echo "Combatants JSON:"
-#       echo "$response" | jq .
-#     fi
-#   else 
-#     echo "Failed to prepare combatant."
-#     exit 1
-#   fi
-# }
-
 prep_combatant(){
   meal=$1
   cuisine=$2
