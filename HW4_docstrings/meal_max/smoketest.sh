@@ -241,7 +241,7 @@ create_meal "Sushi" "Japanese" 12.00 "HIGH"
 get_meal_by_id 2
 get_meal_by_name "Pizza"
 
-delete_meal_by_id 1
+delete_meal_by_id 2
 
 clear_combatants
 prep_combatant "Pizza" "Italian" 10.99 "MED"
