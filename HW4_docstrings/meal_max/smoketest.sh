@@ -123,6 +123,22 @@ get_meal_by_name(){
 }
 
 #battle
+battle(){
+  echo "Starting battle..."
+  response=$(curl -s -X GET "$BASE_URL/battle")
+
+  if echo "$response" | grep -q '"status": "success"'; then
+    echo "Battle complete."
+    if [ "$ECHO_JSON" = true ]; then
+      echo "Winner JSON:"
+      echo "$response" | jq .
+    fi
+  else
+    echo "Battle error. Response was:"
+    echo "$response" | jq .  # Prints full JSON response for easier debugging
+    exit 1
+  fi
+}
 
 
 #clear-combatants
@@ -216,8 +232,11 @@ get_meal_by_id 2
 get_meal_by_name "Pizza"
 
 delete_meal_by_id 2
+create_meal "Jollof" "Ghana" 12.01 "HIGH"
 
 clear_combatants
 prep_combatant "Pizza" "Italian" 10.99 "MED"
+prep_combatant "Jollof" "Ghana" 12.01 "HIGH"
+battle
 get_combatants
 leaderboard
