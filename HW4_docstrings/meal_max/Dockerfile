@@ -4,6 +4,8 @@ FROM python:3.9-slim
 # Set the working directory in the container
 WORKDIR /app
 
+ENV PYTHONPATH="/app"
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 
@@ -14,7 +16,7 @@ COPY .env /app/.env
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install SQLite3
-RUN apt-get update && apt-get install -y sqlite3 curl jq
+RUN apt-get update && apt-get install -y sqlite3
 
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
@@ -24,12 +26,8 @@ RUN chmod +x /app/sql/create_db.sh
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
 
-# Make port 5003 available to the world outside this container
-EXPOSE 5003
-
-#to get it to run 
-ENV PYTHONPATH=/app/meal_max:$PYTHONPATH
-
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
 
 # Run the entrypoint script when the container launches
 CMD ["/app/entrypoint.sh"]
