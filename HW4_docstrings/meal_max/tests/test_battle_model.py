@@ -1,7 +1,7 @@
 import pytest
 
-from meal_max.models.kitchen_model import Meal
-from meal_max.models.battle_model import BattleModel 
+from meal_max2.models.kitchen_model import Meal
+from meal_max2.models.battle_model import BattleModel 
 
 @pytest.fixture()
 def battle_model():
@@ -11,7 +11,7 @@ def battle_model():
 @pytest.fixture #not 100% but they did something similar in playlist test
 def mock_update_meal_stats(mocker):
     """Mock the update_meal_stat function for testing purposes."""
-    return mocker.patch("meal_max.models.battle_model.update_meal_stats")
+    return mocker.patch("meal_max2.models.battle_model.update_meal_stats")
 
 """Fixtures providing sample combatants (meals) for the tests."""
 @pytest.fixture
@@ -33,7 +33,7 @@ def test_battle(battle_model, sample_battle, mock_update_meal_stats, sample_comb
 
     # Mock the necessary methods and return values
     mocker.patch.object(battle_model, 'get_battle_score', side_effect=[75, 50])
-    mock_random = mocker.patch("meal_max.models.battle_model.get_random", return_value=0.2)
+    mock_random = mocker.patch("meal_max2.models.battle_model.get_random", return_value=0.2)
 
     winner = battle_model.battle()
 
