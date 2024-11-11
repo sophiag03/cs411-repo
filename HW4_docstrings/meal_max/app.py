@@ -2,9 +2,9 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 # from flask_cors import CORS
 
-from meal_max.models import kitchen_model
-from meal_max.models.battle_model import BattleModel
-from meal_max.utils.sql_utils import check_database_connection, check_table_exists
+from meal_max2.models import kitchen_model
+from meal_max2.models.battle_model import BattleModel
+from meal_max2.utils.sql_utils import check_database_connection, check_table_exists
 
 
 # Load environment variables from .env file
@@ -325,5 +325,5 @@ def get_leaderboard() -> Response:
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
